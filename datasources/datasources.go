@@ -23,7 +23,7 @@ func GetAllDatasources() []DataSourceFromSQL {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	rows, err := gad_db.Queryx("SELECT Id, Name, Description, cast (Value * 1000000000 as bigint), Interval FROM datasources ORDER BY Id ASC")
+	rows, err := gad_db.Queryx("SELECT Id, Name, Description, cast( Value * 100000000 * ( 1 / (Select Value FROM datasources WHERE name = 'BTCSPOT')) as bigint), Interval FROM datasources WHERE Id > 100001 ORDER BY Id ASC")
 	gad_results := []DataSourceFromSQL{}
 	for rows.Next() {
 		var r DataSourceFromSQL
@@ -46,7 +46,7 @@ func GetDatasource(id uint64) DataSourceFromSQL {
 		log.Fatalln(err)
 	}
 	gd_results := DataSourceFromSQL{}
-	err = gd_db.Get(&gd_results, "SELECT Id, Name, Description, cast (Value * 1000000000 as bigint), Interval FROM datasources WHERE id=$1", id)
+	err = gd_db.Get(&gd_results, "SELECT Id, Name, Description, cast( Value * 100000000 * ( 1 / (SELECT Value FROM datasources WHERE name = 'BTCSPOT')) as bigint), Interval FROM datasources WHERE id=$1", id)
 	if err != nil {
 		log.Fatalf("Error getting datasource specified by ID: %v", err)
 	}
